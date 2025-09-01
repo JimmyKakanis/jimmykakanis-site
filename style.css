@@ -349,3 +349,44 @@ hr {
     width: 100%;
     height: 100%;
 }
+
+/* Projects Page Grid */
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 2em;
+    margin-top: 2em;
+}
+
+.project-card {
+    background: #FFFFFF;
+    border: 1px solid #EAEAEA;
+    border-radius: 12px;
+    padding: 1.5em;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.project-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+.project-card img {
+    max-width: 100%;
+    border-radius: 8px;
+    margin-bottom: 1em;
+}
+
+.project-card h3 {
+    font-family: 'Lora', serif;
+    font-size: 1.25em;
+    font-weight: bold;
+    margin-top: 0;
+    color: #333333;
+}
+
+.project-card a {
+    text-decoration: none;
+    color: inherit;
+}

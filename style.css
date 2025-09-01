@@ -390,3 +390,15 @@ hr {
     text-decoration: none;
     color: inherit;
 }
+
+/* YouTube Video Grid */
+.video-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2em;
+    margin-top: 2em;
+}
+
+.video-grid .video-container {
+    margin: 0;
+}

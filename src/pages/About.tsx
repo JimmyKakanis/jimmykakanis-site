@@ -1,0 +1,18 @@
+const About = () => {
+  return (
+    <div className="max-w-2xl mx-auto px-6 py-12">
+      <h1 className="text-4xl font-serif mb-8">About Me</h1>
+      <div className="prose prose-lg">
+        <img src="/img/lost hair.webp" alt="Jimmy Kakanis" className="float-right w-48 h-48 rounded-full ml-6 mb-6 object-cover" />
+        <p>G'day! I'm Jimmy Kakanis. I'm a high school teacher, wellbeing coordinator, and creator. This website is a space for me to explore and share what I discover about education, learning, psychology, mindfulness, and neuroscience, from the perspective of an inquisitive, creative, and compassionate Teacher.</p>
+        <p>My journey here has been a varied one. I started out with a love for writing, which led me down an unexpected path into starting my own business making skateboards and running workshops. Through that experience, I discovered a deep passion for teaching—for showing people how to do something interesting and watching them learn and grow. That led me to study Education, and now I get to bring that passion into the classroom every day.</p>
+        <p>On top of teaching, I run a YouTube channel called "The Teacher Becomes The Student," where I embrace and model a mindset of continuous learning. Writing scripts for these videos has rekindled my love for writing and sharing ideas, which is what this website is all about.</p>
+        <p>My latest passion is all about learning to code. I've created this website, and am learning to create apps that will help the education industry.</p>
+        <p>Whether it's through a blog post, a project, or a video, my goal is to share my experiences and connect with others. Thanks for stopping by.</p>
+      </div>
+    </div>
+  );
+};
+
+export default About;
+

@@ -7,7 +7,7 @@ import {
 import { db } from '../../lib/firebase';
 import type { BlogPost } from '../../types/index';
 import Editor from '../Editor';
-import { Plus, Pencil, Trash2, ArrowLeft, Save } from 'lucide-react';
+import { Plus, Pencil, Trash2, ArrowLeft, Save, FileText } from 'lucide-react';
 import { uploadImage } from '../../lib/upload';
 
 const PostList = () => {
@@ -56,11 +56,20 @@ const PostList = () => {
         ) : (
           posts.map((post) => (
             <div key={post.id} className="flex items-center justify-between p-4 border rounded-xl hover:shadow-sm transition-shadow">
-              <div>
-                <h3 className="font-bold text-lg">{post.title}</h3>
-                <p className="text-sm text-gray-500">
-                  {post.publishedAt?.toDate ? post.publishedAt.toDate().toLocaleDateString() : 'Draft'}
-                </p>
+              <div className="flex items-center gap-4">
+                {post.coverImage ? (
+                  <img src={post.coverImage} alt={post.title} className="w-12 h-12 object-cover rounded-lg" />
+                ) : (
+                  <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
+                    <FileText size={20} />
+                  </div>
+                )}
+                <div>
+                  <h3 className="font-bold text-lg leading-none mb-1">{post.title}</h3>
+                  <p className="text-sm text-gray-500">
+                    {post.publishedAt?.toDate ? post.publishedAt.toDate().toLocaleDateString('en-AU') : 'Draft'}
+                  </p>
+                </div>
               </div>
               <div className="flex gap-2">
                 <button
@@ -94,6 +103,7 @@ const PostEditor = () => {
   const [content, setContent] = useState('');
   const [excerpt, setExcerpt] = useState('');
   const [coverImage, setCoverImage] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -117,12 +127,15 @@ const PostEditor = () => {
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setUploading(true);
       try {
         const url = await uploadImage(file, 'blog-covers');
         setCoverImage(url);
       } catch (err) {
         console.error('Error uploading image:', err);
-        alert('Failed to upload image');
+        alert('Failed to upload image. Please check your Firebase Storage settings.');
+      } finally {
+        setUploading(false);
       }
     }
   };
@@ -217,16 +230,34 @@ const PostEditor = () => {
 
         <div>
           <label className="block text-sm font-semibold mb-2 text-gray-600 uppercase">Cover Image</label>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 p-4 border-2 border-dashed rounded-xl bg-gray-50/50">
             {coverImage && (
-              <img src={coverImage} alt="Cover preview" className="w-24 h-24 object-cover rounded-lg" />
+              <div className="relative group w-24 h-24">
+                <img src={coverImage} alt="Cover preview" className="w-full h-full object-cover rounded-lg shadow-sm" />
+                <button 
+                  type="button"
+                  onClick={() => setCoverImage(null)}
+                  className="absolute -top-2 -right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <Trash2 size={14} />
+                </button>
+              </div>
             )}
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              className="text-sm"
-            />
+            <div className="flex-1">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                disabled={uploading}
+                className="text-sm block w-full text-gray-500
+                  file:mr-4 file:py-2 file:px-4
+                  file:rounded-full file:border-0
+                  file:text-sm file:font-semibold
+                  file:bg-black file:text-white
+                  hover:file:bg-gray-800 transition-all"
+              />
+              {uploading && <p className="text-xs text-brand-red mt-2 animate-pulse">Uploading image...</p>}
+            </div>
           </div>
         </div>
 

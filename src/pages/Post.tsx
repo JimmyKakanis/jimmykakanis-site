@@ -16,7 +16,10 @@ const Post = () => {
         const docRef = doc(db, 'posts', id);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          setPost(docSnap.data() as BlogPost);
+          const data = docSnap.data() as BlogPost;
+          if (data.status === 'published') {
+            setPost(data);
+          }
         }
         setLoading(false);
       };

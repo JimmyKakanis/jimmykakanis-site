@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy, where } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import type { BlogPost } from '../types/index';
 import { Link } from 'react-router-dom';
@@ -10,14 +10,24 @@ const Blog = () => {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const q = query(collection(db, 'posts'), orderBy('publishedAt', 'desc'));
-      const querySnapshot = await getDocs(q);
-      const postsData = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as BlogPost[];
-      setPosts(postsData);
-      setLoading(false);
+      try {
+        const q = query(
+          collection(db, 'posts'), 
+          orderBy('publishedAt', 'desc')
+        );
+        const querySnapshot = await getDocs(q);
+        const postsData = querySnapshot.docs
+          .map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          }))
+          .filter((post: any) => post.status === 'published') as BlogPost[];
+        setPosts(postsData);
+      } catch (err) {
+        console.error("Error fetching posts:", err);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchPosts();
   }, []);

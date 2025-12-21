@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy, where } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import type { Project } from '../types/index';
 
@@ -9,14 +9,24 @@ const Projects = () => {
 
   useEffect(() => {
     const fetchProjects = async () => {
-      const q = query(collection(db, 'projects'), orderBy('order', 'asc'));
-      const querySnapshot = await getDocs(q);
-      const projectsData = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as Project[];
-      setProjects(projectsData);
-      setLoading(false);
+      try {
+        const q = query(
+          collection(db, 'projects'), 
+          orderBy('order', 'asc')
+        );
+        const querySnapshot = await getDocs(q);
+        const projectsData = querySnapshot.docs
+          .map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          }))
+          .filter((project: any) => project.status === 'published') as Project[];
+        setProjects(projectsData);
+      } catch (err) {
+        console.error("Error fetching projects:", err);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchProjects();
   }, []);

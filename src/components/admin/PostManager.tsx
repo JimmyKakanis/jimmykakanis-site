@@ -65,7 +65,16 @@ const PostList = () => {
                   </div>
                 )}
                 <div>
-                  <h3 className="font-bold text-lg leading-none mb-1">{post.title}</h3>
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="font-bold text-lg leading-none">{post.title}</h3>
+                    <span className={`text-[10px] uppercase px-1.5 py-0.5 rounded font-bold ${
+                      post.status === 'published' 
+                        ? 'bg-green-100 text-green-700' 
+                        : 'bg-yellow-100 text-yellow-700'
+                    }`}>
+                      {post.status || 'draft'}
+                    </span>
+                  </div>
                   <p className="text-sm text-gray-500">
                     {post.publishedAt?.toDate ? post.publishedAt.toDate().toLocaleDateString('en-AU') : 'Draft'}
                   </p>
@@ -103,6 +112,7 @@ const PostEditor = () => {
   const [content, setContent] = useState('');
   const [excerpt, setExcerpt] = useState('');
   const [coverImage, setCoverImage] = useState<string | null>(null);
+  const [status, setStatus] = useState<'draft' | 'published'>('draft');
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
@@ -117,6 +127,7 @@ const PostEditor = () => {
           setContent(data.content);
           setExcerpt(data.excerpt);
           setCoverImage(data.coverImage || null);
+          setStatus(data.status || 'draft');
         }
         setLoading(false);
       };
@@ -140,8 +151,7 @@ const PostEditor = () => {
     }
   };
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSave = async (newStatus: 'draft' | 'published') => {
     setSaving(true);
 
     const postData = {
@@ -150,6 +160,7 @@ const PostEditor = () => {
       content,
       excerpt,
       coverImage,
+      status: newStatus,
       updatedAt: Timestamp.now(),
     };
 
@@ -175,7 +186,7 @@ const PostEditor = () => {
   if (loading) return <div>Loading editor...</div>;
 
   return (
-    <form onSubmit={handleSave} className="space-y-6">
+    <div className="space-y-6">
       <div className="flex justify-between items-center mb-6">
         <button
           type="button"
@@ -184,13 +195,22 @@ const PostEditor = () => {
         >
           <ArrowLeft size={18} /> Back to posts
         </button>
-        <button
-          type="submit"
-          disabled={saving}
-          className="bg-brand-red text-white px-6 py-2 rounded-lg flex items-center gap-2 hover:bg-brand-red-hover transition-colors disabled:bg-gray-400"
-        >
-          <Save size={18} /> {saving ? 'Saving...' : 'Save Post'}
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={() => handleSave('draft')}
+            disabled={saving}
+            className="px-6 py-2 rounded-lg border border-black flex items-center gap-2 hover:bg-gray-50 transition-colors disabled:opacity-50"
+          >
+            <Save size={18} /> {saving && status === 'draft' ? 'Saving...' : 'Save Draft'}
+          </button>
+          <button
+            onClick={() => handleSave('published')}
+            disabled={saving}
+            className="bg-brand-red text-white px-6 py-2 rounded-lg flex items-center gap-2 hover:bg-brand-red-hover transition-colors disabled:bg-gray-400"
+          >
+            <FileText size={18} /> {saving && status === 'published' ? 'Publishing...' : 'Publish'}
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-6">
@@ -266,7 +286,7 @@ const PostEditor = () => {
           <Editor content={content} onChange={setContent} />
         </div>
       </div>
-    </form>
+    </div>
   );
 };
 

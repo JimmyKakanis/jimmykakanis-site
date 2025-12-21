@@ -3,8 +3,7 @@ import { signOut } from 'firebase/auth';
 import { auth } from '../lib/firebase';
 import PostManager from '../components/admin/PostManager';
 import ProjectManager from '../components/admin/ProjectManager';
-import Migration from '../components/admin/Migration';
-import { FileText, FolderRoot, LogOut, LayoutDashboard, Database } from 'lucide-react';
+import { FileText, FolderRoot, LogOut, LayoutDashboard } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -24,7 +23,6 @@ const Admin = () => {
   const navItems = [
     { label: 'Posts', path: '/admin/posts', icon: FileText },
     { label: 'Projects', path: '/admin/projects', icon: FolderRoot },
-    { label: 'Migration', path: '/admin/migration', icon: Database },
   ];
 
   return (
@@ -75,7 +73,6 @@ const Admin = () => {
             </div>} />
             <Route path="/posts/*" element={<PostManager />} />
             <Route path="/projects/*" element={<ProjectManager />} />
-            <Route path="/migration" element={<Migration />} />
           </Routes>
         </main>
       </div>

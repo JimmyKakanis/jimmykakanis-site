@@ -5,6 +5,7 @@ export interface BlogPost {
   content: string;
   excerpt: string;
   coverImage?: string | null;
+  status: 'draft' | 'published';
   publishedAt: any;
   updatedAt: any;
   tags: string[];
@@ -17,4 +18,5 @@ export interface Project {
   image: string;
   link: string;
   order: number;
+  status: 'draft' | 'published';
 }

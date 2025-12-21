@@ -59,7 +59,16 @@ const ProjectList = () => {
                 <GripVertical className="text-gray-300" />
                 <img src={project.image} alt={project.title} className="w-12 h-12 object-cover rounded" />
                 <div>
-                  <h3 className="font-bold">{project.title}</h3>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-bold">{project.title}</h3>
+                    <span className={`text-[10px] uppercase px-1.5 py-0.5 rounded font-bold ${
+                      project.status === 'published' 
+                        ? 'bg-green-100 text-green-700' 
+                        : 'bg-yellow-100 text-yellow-700'
+                    }`}>
+                      {project.status || 'draft'}
+                    </span>
+                  </div>
                   <p className="text-xs text-gray-500 truncate max-w-xs">{project.description}</p>
                 </div>
               </div>
@@ -95,6 +104,7 @@ const ProjectEditor = () => {
   const [link, setLink] = useState('');
   const [order, setOrder] = useState(0);
   const [image, setImage] = useState<string | null>(null);
+  const [status, setStatus] = useState<'draft' | 'published'>('draft');
 
   useEffect(() => {
     if (id) {
@@ -108,6 +118,7 @@ const ProjectEditor = () => {
           setLink(data.link);
           setOrder(data.order);
           setImage(data.image);
+          setStatus(data.status || 'draft');
         }
         setLoading(false);
       };
@@ -128,8 +139,7 @@ const ProjectEditor = () => {
     }
   };
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSave = async (newStatus: 'draft' | 'published') => {
     if (!image) {
       alert('Please upload an image first');
       return;
@@ -142,6 +152,7 @@ const ProjectEditor = () => {
       link,
       order,
       image,
+      status: newStatus,
     };
 
     try {
@@ -162,7 +173,7 @@ const ProjectEditor = () => {
   if (loading) return <div>Loading editor...</div>;
 
   return (
-    <form onSubmit={handleSave} className="space-y-6">
+    <div className="space-y-6">
       <div className="flex justify-between items-center mb-6">
         <button
           type="button"
@@ -171,13 +182,22 @@ const ProjectEditor = () => {
         >
           <ArrowLeft size={18} /> Back to projects
         </button>
-        <button
-          type="submit"
-          disabled={saving}
-          className="bg-brand-red text-white px-6 py-2 rounded-lg flex items-center gap-2 hover:bg-brand-red-hover transition-colors disabled:bg-gray-400"
-        >
-          <Save size={18} /> {saving ? 'Saving...' : 'Save Project'}
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={() => handleSave('draft')}
+            disabled={saving}
+            className="px-6 py-2 rounded-lg border border-black flex items-center gap-2 hover:bg-gray-50 transition-colors disabled:opacity-50"
+          >
+            <Save size={18} /> {saving && status === 'draft' ? 'Saving...' : 'Save Draft'}
+          </button>
+          <button
+            onClick={() => handleSave('published')}
+            disabled={saving}
+            className="bg-brand-red text-white px-6 py-2 rounded-lg flex items-center gap-2 hover:bg-brand-red-hover transition-colors disabled:bg-gray-400"
+          >
+            <Plus size={18} /> {saving && status === 'published' ? 'Publishing...' : 'Publish'}
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-6">
@@ -243,7 +263,7 @@ const ProjectEditor = () => {
           </div>
         </div>
       </div>
-    </form>
+    </div>
   );
 };
 

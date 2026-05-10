@@ -78,3 +78,10 @@ Firebase is initialized **lazily** the first time code calls `getDb()`, `getAuth
 - **Strict Build**: The project uses strict TypeScript checking. Ensure all imports are used and types are valid before pushing.
 - **Environment**: Set every `VITE_FIREBASE_*` variable in the Vercel project for each environment you deploy (Production / Preview). Local development uses `.env` (gitignored); see root `.env.example`.
 
+---
+
+## Related documentation
+
+- [Technical reference](./technical.md) — stack details, routing table, Firebase client usage, styling.
+- [Project status](./status.md) — snapshot between releases.
+- [Tasks](./tasks.md) — roadmap and backlog.

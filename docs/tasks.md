@@ -18,3 +18,11 @@
 - **Firebase Indexes**: If re-enabling server-side filtering, ensure composite indexes for `status` + `orderBy` fields are created in the Firebase Console.
 - **Tiptap Plugins**: Periodically check for updates to Tiptap extensions to ensure the editor stays secure and functional.
 
+---
+
+## Documentation
+
+- [Architecture](./architecture.md)
+- [Technical reference](./technical.md)
+- [Project status](./status.md)
+

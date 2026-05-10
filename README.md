@@ -4,7 +4,9 @@ Public blog and portfolio with a Firebase-backed admin (posts, projects). Built 
 
 ## Documentation
 
-- [Architecture & technical overview](./docs/architecture.md)
+- [Architecture overview](./docs/architecture.md)
+- [Technical reference](./docs/technical.md)
+- [Project status](./docs/status.md)
 - [Tasks & roadmap](./docs/tasks.md)
 
 ## Local setup

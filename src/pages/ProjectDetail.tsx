@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../lib/firebase';
+import { getDb, firebaseConfigured } from '../lib/firebase';
 import type { Project } from '../types/index';
 import { ArrowLeft } from 'lucide-react';
 import { getExternalProjectUrl } from '../lib/projectLinks';
@@ -9,15 +9,19 @@ import { getExternalProjectUrl } from '../lib/projectLinks';
 const ProjectDetail = () => {
   const { id } = useParams();
   const [project, setProject] = useState<Project | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(firebaseConfigured);
 
   useEffect(() => {
+    if (!firebaseConfigured) {
+      setLoading(false);
+      return;
+    }
     if (!id) {
       setLoading(false);
       return;
     }
     const load = async () => {
-      const snap = await getDoc(doc(db, 'projects', id));
+      const snap = await getDoc(doc(getDb(), 'projects', id));
       if (snap.exists()) {
         const data = snap.data() as Project;
         if (data.status === 'published') {
@@ -30,6 +34,15 @@ const ProjectDetail = () => {
     };
     load();
   }, [id]);
+
+  if (!firebaseConfigured) {
+    return (
+      <div className="max-w-2xl mx-auto px-6 py-24 text-center text-gray-600">
+        <p className="mb-6">This project cannot load because Firebase environment variables are missing on this deployment.</p>
+        <Link to="/projects" className="text-blog-link underline hover:text-blog-link-hover">Back to projects</Link>
+      </div>
+    );
+  }
 
   if (loading) {
     return (

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../lib/firebase';
+import { getAuthInstance, firebaseConfigured } from '../lib/firebase';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
@@ -16,7 +16,7 @@ const Login = () => {
     setError('');
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      await signInWithEmailAndPassword(getAuthInstance(), email, password);
       navigate('/admin');
     } catch (err: any) {
       setError(err.message || 'Failed to login');
@@ -24,6 +24,18 @@ const Login = () => {
       setLoading(false);
     }
   };
+
+  if (!firebaseConfigured) {
+    return (
+      <div className="max-w-md mx-auto px-6 py-24">
+        <h1 className="text-3xl font-serif mb-6 text-center">Admin Login</h1>
+        <p className="text-center text-gray-600 leading-relaxed">
+          Login is disabled because Firebase environment variables are not set for this deployment. Add all{' '}
+          <code className="text-sm bg-gray-100 px-1.5 py-0.5 rounded">VITE_FIREBASE_*</code> keys in your host (e.g. Vercel → Environment Variables), redeploy, then try again.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-md mx-auto px-6 py-24">

@@ -4,7 +4,7 @@ import {
   collection, getDocs, addDoc, updateDoc, deleteDoc, doc, 
   getDoc, query, orderBy, Timestamp 
 } from 'firebase/firestore';
-import { db } from '../../lib/firebase';
+import { getDb } from '../../lib/firebase';
 import type { BlogPost } from '../../types/index';
 import Editor from '../Editor';
 import { Plus, Pencil, Trash2, ArrowLeft, Save, FileText } from 'lucide-react';
@@ -18,7 +18,7 @@ const PostList = () => {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const q = query(collection(db, 'posts'), orderBy('publishedAt', 'desc'));
+      const q = query(collection(getDb(), 'posts'), orderBy('publishedAt', 'desc'));
       const querySnapshot = await getDocs(q);
       const postsData = querySnapshot.docs.map(doc => ({
         id: doc.id,
@@ -32,7 +32,7 @@ const PostList = () => {
 
   const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this post?')) {
-      await deleteDoc(doc(db, 'posts', id));
+      await deleteDoc(doc(getDb(), 'posts', id));
       setPosts(posts.filter(p => p.id !== id));
     }
   };
@@ -128,7 +128,7 @@ const PostEditor = () => {
   useEffect(() => {
     if (id) {
       const fetchPost = async () => {
-        const docRef = doc(db, 'posts', id);
+        const docRef = doc(getDb(), 'posts', id);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           const data = docSnap.data() as BlogPost;
@@ -179,9 +179,9 @@ const PostEditor = () => {
 
     try {
       if (id) {
-        await updateDoc(doc(db, 'posts', id), postData);
+        await updateDoc(doc(getDb(), 'posts', id), postData);
       } else {
-        await addDoc(collection(db, 'posts'), {
+        await addDoc(collection(getDb(), 'posts'), {
           ...postData,
           publishedAt: Timestamp.now(),
           tags: [],

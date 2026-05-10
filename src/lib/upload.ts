@@ -1,10 +1,10 @@
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { storage } from './firebase';
+import { getStorageInstance } from './firebase';
 import { makeBlogCoverBlobs } from './imageResize';
 
 export const uploadImage = async (file: File, folder: string = 'blog'): Promise<string> => {
   const fileName = `${Date.now()}-${file.name}`;
-  const storageRef = ref(storage, `${folder}/${fileName}`);
+  const storageRef = ref(getStorageInstance(), `${folder}/${fileName}`);
 
   await uploadBytes(storageRef, file);
   const downloadURL = await getDownloadURL(storageRef);
@@ -30,8 +30,8 @@ export async function uploadBlogCoverImages(
   const { full, thumbnail } = await makeBlogCoverBlobs(file);
 
   if (full && thumbnail) {
-    const fullRef = ref(storage, `${folder}/${stem}-full.jpg`);
-    const thumbRef = ref(storage, `${folder}/${stem}-thumb.jpg`);
+    const fullRef = ref(getStorageInstance(), `${folder}/${stem}-full.jpg`);
+    const thumbRef = ref(getStorageInstance(), `${folder}/${stem}-thumb.jpg`);
     await uploadBytes(fullRef, full, { contentType: 'image/jpeg' });
     await uploadBytes(thumbRef, thumbnail, { contentType: 'image/jpeg' });
     const [fullUrl, thumbnailUrl] = await Promise.all([
@@ -41,7 +41,7 @@ export async function uploadBlogCoverImages(
     return { fullUrl, thumbnailUrl };
   }
 
-  const originalRef = ref(storage, `${folder}/${stem}-original`);
+  const originalRef = ref(getStorageInstance(), `${folder}/${stem}-original`);
   await uploadBytes(originalRef, file);
   const fullUrl = await getDownloadURL(originalRef);
   return { fullUrl, thumbnailUrl: null };

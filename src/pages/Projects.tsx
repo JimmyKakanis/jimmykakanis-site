@@ -1,19 +1,21 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
-import { db } from '../lib/firebase';
+import { getDb, firebaseConfigured } from '../lib/firebase';
 import type { Project } from '../types/index';
 import { getExternalProjectUrl } from '../lib/projectLinks';
 
 const Projects = () => {
   const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(firebaseConfigured);
 
   useEffect(() => {
+    if (!firebaseConfigured) return;
+
     const fetchProjects = async () => {
       try {
         const q = query(
-          collection(db, 'projects'), 
+          collection(getDb(), 'projects'), 
           orderBy('order', 'asc')
         );
         const querySnapshot = await getDocs(q);
@@ -32,6 +34,18 @@ const Projects = () => {
     };
     fetchProjects();
   }, []);
+
+  if (!firebaseConfigured) {
+    return (
+      <div className="max-w-4xl mx-auto px-6 py-12">
+        <h1 className="text-4xl font-serif mb-6 text-center">Projects</h1>
+        <p className="text-center text-gray-600 leading-relaxed">
+          Projects are not loading because Firebase was not configured for this deployment. Add your{' '}
+          <code className="text-sm bg-gray-100 px-1.5 py-0.5 rounded">VITE_FIREBASE_*</code> variables in your host&apos;s environment settings and redeploy.
+        </p>
+      </div>
+    );
+  }
 
   if (loading) return (
     <div className="max-w-4xl mx-auto px-6 py-24 text-center text-gray-400 font-serif">

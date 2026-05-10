@@ -4,7 +4,7 @@ import {
   collection, getDocs, addDoc, updateDoc, deleteDoc, doc, 
   getDoc, query, orderBy 
 } from 'firebase/firestore';
-import { db } from '../../lib/firebase';
+import { getDb } from '../../lib/firebase';
 import type { Project } from '../../types/index';
 import { Plus, Pencil, Trash2, ArrowLeft, Save, GripVertical } from 'lucide-react';
 import { uploadImage } from '../../lib/upload';
@@ -18,7 +18,7 @@ const ProjectList = () => {
 
   useEffect(() => {
     const fetchProjects = async () => {
-      const q = query(collection(db, 'projects'), orderBy('order', 'asc'));
+      const q = query(collection(getDb(), 'projects'), orderBy('order', 'asc'));
       const querySnapshot = await getDocs(q);
       const projectsData = querySnapshot.docs.map(doc => ({
         id: doc.id,
@@ -32,7 +32,7 @@ const ProjectList = () => {
 
   const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this project?')) {
-      await deleteDoc(doc(db, 'projects', id));
+      await deleteDoc(doc(getDb(), 'projects', id));
       setProjects(projects.filter(p => p.id !== id));
     }
   };
@@ -116,7 +116,7 @@ const ProjectEditor = () => {
   useEffect(() => {
     if (id) {
       const fetchProject = async () => {
-        const docRef = doc(db, 'projects', id);
+        const docRef = doc(getDb(), 'projects', id);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           const data = docSnap.data() as Project;
@@ -166,9 +166,9 @@ const ProjectEditor = () => {
 
     try {
       if (id) {
-        await updateDoc(doc(db, 'projects', id), projectData);
+        await updateDoc(doc(getDb(), 'projects', id), projectData);
       } else {
-        await addDoc(collection(db, 'projects'), { ...projectData, image: trimmedImage });
+        await addDoc(collection(getDb(), 'projects'), { ...projectData, image: trimmedImage });
       }
       navigate('/admin/projects');
     } catch (err) {

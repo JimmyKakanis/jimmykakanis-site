@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { collection, getDocs, limit, query, where } from 'firebase/firestore';
-import { db } from '../lib/firebase';
+import { getDb, firebaseConfigured } from '../lib/firebase';
 import type { BlogPost } from '../types/index';
 import { CoverImageWithFallback } from '../components/CoverImageWithFallback';
 
@@ -21,14 +21,18 @@ const Home = () => {
     let cancelled = false;
 
     const loadFallowCover = async () => {
+      if (!firebaseConfigured) {
+        if (!cancelled) setFallowResolved(true);
+        return;
+      }
       try {
         const slugQ = query(
-          collection(db, 'posts'),
+          collection(getDb(), 'posts'),
           where('slug', '==', FALLOW_SLUG),
           limit(1)
         );
         const titleQ = query(
-          collection(db, 'posts'),
+          collection(getDb(), 'posts'),
           where('title', '==', FALLOW_TITLE),
           limit(1)
         );

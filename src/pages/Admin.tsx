@@ -1,6 +1,6 @@
 import { Link, useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
-import { auth } from '../lib/firebase';
+import { getAuthInstance, firebaseConfigured } from '../lib/firebase';
 import { FileText, FolderRoot, LogOut, LayoutDashboard } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -23,7 +23,9 @@ const Admin = () => {
   const location = useLocation();
 
   const handleLogout = async () => {
-    await signOut(auth);
+    if (firebaseConfigured) {
+      await signOut(getAuthInstance());
+    }
     navigate('/login');
   };
 

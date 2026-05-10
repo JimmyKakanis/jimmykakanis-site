@@ -1,19 +1,23 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../lib/firebase';
+import { getDb, firebaseConfigured } from '../lib/firebase';
 import type { BlogPost } from '../types/index';
 import { ArrowLeft } from 'lucide-react';
 
 const Post = () => {
   const { id } = useParams();
   const [post, setPost] = useState<BlogPost | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(firebaseConfigured);
 
   useEffect(() => {
+    if (!firebaseConfigured) {
+      setLoading(false);
+      return;
+    }
     if (id) {
       const fetchPost = async () => {
-        const docRef = doc(db, 'posts', id);
+        const docRef = doc(getDb(), 'posts', id);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           const data = docSnap.data() as BlogPost;
@@ -24,8 +28,19 @@ const Post = () => {
         setLoading(false);
       };
       fetchPost();
+    } else {
+      setLoading(false);
     }
   }, [id]);
+
+  if (!firebaseConfigured) {
+    return (
+      <div className="max-w-2xl mx-auto px-6 py-24 text-center text-gray-600">
+        <p className="mb-6">This post cannot load because Firebase environment variables are missing on this deployment.</p>
+        <Link to="/" className="text-brand-red hover:underline">Back home</Link>
+      </div>
+    );
+  }
 
   if (loading) return (
     <div className="max-w-2xl mx-auto px-6 py-24 text-center text-gray-400 font-serif">

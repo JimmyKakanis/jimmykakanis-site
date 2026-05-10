@@ -1,19 +1,21 @@
 import { useState, useEffect } from 'react';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
-import { db } from '../lib/firebase';
+import { getDb, firebaseConfigured } from '../lib/firebase';
 import type { BlogPost } from '../types/index';
 import { Link } from 'react-router-dom';
 import { CoverImageWithFallback } from '../components/CoverImageWithFallback';
 
 const Blog = () => {
   const [posts, setPosts] = useState<BlogPost[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(firebaseConfigured);
 
   useEffect(() => {
+    if (!firebaseConfigured) return;
+
     const fetchPosts = async () => {
       try {
         const q = query(
-          collection(db, 'posts'), 
+          collection(getDb(), 'posts'), 
           orderBy('publishedAt', 'desc')
         );
         const querySnapshot = await getDocs(q);
@@ -32,6 +34,20 @@ const Blog = () => {
     };
     fetchPosts();
   }, []);
+
+  if (!firebaseConfigured) {
+    return (
+      <div className="max-w-2xl mx-auto px-6 py-12">
+        <h1 className="text-4xl font-serif mb-6 text-center">Blog</h1>
+        <p className="text-center text-gray-600 leading-relaxed">
+          Posts are not loading because Firebase was not configured for this deployment. In Vercel (or your host), open{' '}
+          <strong>Project → Settings → Environment Variables</strong> and add the same{' '}
+          <code className="text-sm bg-gray-100 px-1.5 py-0.5 rounded">VITE_FIREBASE_*</code> values you use locally, then{' '}
+          <strong>redeploy</strong>.
+        </p>
+      </div>
+    );
+  }
 
   if (loading) return (
     <div className="max-w-2xl mx-auto px-6 py-12 text-center text-gray-400">

@@ -1,78 +1,56 @@
-# React + TypeScript + Vite
+# Jimmy Kakanis — personal site
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Public blog and portfolio with a Firebase-backed admin (posts, projects). Built with **React 19**, **TypeScript**, **Vite**, **Tailwind CSS 4**, and **Firebase** (Firestore, Auth, Storage). Deployed on **Vercel**.
 
-Currently, two official plugins are available:
+## Documentation
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- [Architecture & technical overview](./docs/architecture.md)
+- [Tasks & roadmap](./docs/tasks.md)
 
-## 📚 Documentation
-For details on architecture, data models, and the content management system, see:
-- [Architecture & Technical Overview](./docs/architecture.md)
-- [Tasks & Roadmap](./docs/tasks.md)
+## Local setup
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Environment variables
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Secrets are **not** in git. Copy the template and fill in your Firebase web app values (from the Firebase console → Project settings → Your apps). On Windows you can copy the file manually; on macOS/Linux:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+cp .env.example .env
 ```
+
+Required for the browser app (Vite exposes only variables prefixed with `VITE_`):
+
+| Variable | Purpose |
+|----------|---------|
+| `VITE_FIREBASE_API_KEY` | Firebase web API key |
+| `VITE_FIREBASE_AUTH_DOMAIN` | Auth domain |
+| `VITE_FIREBASE_PROJECT_ID` | Project ID |
+| `VITE_FIREBASE_STORAGE_BUCKET` | Storage bucket |
+| `VITE_FIREBASE_MESSAGING_SENDER_ID` | Messaging sender ID |
+| `VITE_FIREBASE_APP_ID` | App ID |
+
+Optional (local scripts only, e.g. thumbnail backfill): see `.env.example` for `GOOGLE_APPLICATION_CREDENTIALS` and Admin SDK notes.
+
+## Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Development server |
+| `npm run build` | Typecheck + production build |
+| `npm run preview` | Preview production build locally |
+| `npm run lint` | ESLint |
+| `npm run backfill:thumbnails` | Admin script to generate post cover thumbnails (requires Admin SDK setup) |
+
+## Deployment (Vercel)
+
+Vite inlines `import.meta.env.VITE_*` **at build time**. After removing `.env` from the repository, you **must** define the same `VITE_FIREBASE_*` variables in **Vercel → Project → Settings → Environment Variables** (Production and Preview as needed), then **redeploy**.
+
+If those variables are missing, the site still loads, but blog, projects, and admin show an explanatory message instead of Firebase data (the app no longer crashes on a blank screen).
+
+## Branding
+
+- Document title: **Jimmy Kakanis** (`index.html`).
+- Favicon: `public/favicon.svg` (JK monogram on brand red).

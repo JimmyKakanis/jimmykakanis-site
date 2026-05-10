@@ -49,7 +49,7 @@ Both **Blog Posts** and **Projects** share a similar lifecycle:
 
 ### Firestore
 - `posts`: Collection for blog content.
-  - Fields: `title`, `slug`, `content`, `excerpt`, `status`, `publishedAt`, `updatedAt`, `coverImage`.
+  - Fields: `title`, `slug`, `content`, `excerpt`, `status`, `publishedAt`, `updatedAt`, `coverImage`, optional `coverImageThumbnail` (smaller JPEG for listings; UI falls back to `coverImage` when absent).
 - `projects`: Collection for portfolio items.
   - Fields: `title`, `description`, `link`, `order`, `status`, `image`.
 
@@ -60,10 +60,21 @@ Both **Blog Posts** and **Projects** share a similar lifecycle:
 ### Auth
 - Uses standard Firebase Email/Password authentication.
 - Access to the `/admin` route is protected by the `ProtectedRoute.tsx` component.
+- **`AuthProvider`** (`src/hooks/useAuth.tsx`) always renders the app shell; auth loading state is used only where needed (e.g. admin). Do not gate the entire `<App />` on auth loading, or public pages can appear blank.
+
+---
+
+## 🔧 Client configuration (`src/lib/firebase.ts`)
+
+Firebase is initialized **lazily** the first time code calls `getDb()`, `getAuthInstance()`, or `getStorageInstance()`. This avoids a production **white screen** when `VITE_FIREBASE_*` variables were not present at build time (Vite bakes those values in during `npm run build`).
+
+- **`firebaseConfigured`**: `true` only when all six `VITE_FIREBASE_*` env vars are non-empty strings at **build** time.
+- If `firebaseConfigured` is `false`, public static routes still work; blog, projects, single post/project views, login, and admin show user-facing setup messages instead of calling Firebase.
 
 ---
 
 ## 🚀 Deployment & Build
 - **Trigger**: Pushes to the `main` branch trigger a Vercel build.
 - **Strict Build**: The project uses strict TypeScript checking. Ensure all imports are used and types are valid before pushing.
+- **Environment**: Set every `VITE_FIREBASE_*` variable in the Vercel project for each environment you deploy (Production / Preview). Local development uses `.env` (gitignored); see root `.env.example`.
 

@@ -5,6 +5,9 @@
 - [x] **Admin UI Polish**: Added status badges and improved save buttons.
 - [x] **Content Migration**: Successfully moved all legacy static content into the dynamic database.
 - [x] **Bug Fix**: Resolved build failures caused by unused imports in page templates.
+- [x] **Production robustness**: Lazy Firebase init + `firebaseConfigured`; documented `VITE_*` for Vercel; `.env` gitignored with `.env.example` template.
+- [x] **Blog covers**: Optional thumbnails, upload pipeline, and home “Contact” tile tied to *Permission to Be Fallow* cover with static fallback.
+- [x] **Site branding**: Title and JK favicon (`public/favicon.svg`).
 
 ## 🛠️ Current Priorities
 - [ ] **Image Optimization**: Consider using a CDN or Firebase image resizing extensions for better performance.

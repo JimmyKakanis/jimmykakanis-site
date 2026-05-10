@@ -1,10 +1,13 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 @theme {
   --font-serif: "Lora", serif;
   --font-sans: "Source Sans Pro", sans-serif;
   --color-brand-red: #D9534F;
   --color-brand-red-hover: #C9302C;
+  --color-blog-link: #a66d38;
+  --color-blog-link-hover: #7a4a24;
 }
 
 @layer base {
@@ -25,5 +28,19 @@
 
   a {
     @apply transition-colors duration-200;
+  }
+}
+
+/* Responsive video embeds (TipTap youtube + vimeo) inside blog HTML */
+@layer components {
+  .blog-prose-content [data-youtube-video],
+  .blog-prose-content [data-vimeo-video] {
+    @apply relative my-8 w-full overflow-hidden rounded-2xl shadow-sm;
+    aspect-ratio: 16 / 9;
+  }
+
+  .blog-prose-content [data-youtube-video] iframe,
+  .blog-prose-content [data-vimeo-video] iframe {
+    @apply absolute inset-0 h-full w-full border-0;
   }
 }

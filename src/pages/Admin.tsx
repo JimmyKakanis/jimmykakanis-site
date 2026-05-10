@@ -1,14 +1,21 @@
-import { Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import { auth } from '../lib/firebase';
-import PostManager from '../components/admin/PostManager';
-import ProjectManager from '../components/admin/ProjectManager';
 import { FileText, FolderRoot, LogOut, LayoutDashboard } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
+}
+
+export function AdminHome() {
+  return (
+    <div className="flex flex-col items-center justify-center h-full text-gray-400">
+      <LayoutDashboard size={48} className="mb-4 opacity-20" />
+      <p>Select a section to manage content</p>
+    </div>
+  );
 }
 
 const Admin = () => {
@@ -33,7 +40,7 @@ const Admin = () => {
             <LayoutDashboard size={20} className="text-gray-400" />
             <span className="font-bold text-gray-700">Admin Panel</span>
           </div>
-          
+
           <nav className="space-y-1">
             {navItems.map((item) => {
               const Icon = item.icon;
@@ -43,10 +50,10 @@ const Admin = () => {
                   key={item.path}
                   to={item.path}
                   className={cn(
-                    "flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all font-medium",
-                    isActive 
-                      ? "bg-black text-white shadow-md" 
-                      : "text-gray-600 hover:bg-gray-100"
+                    'flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all font-medium',
+                    isActive
+                      ? 'bg-black text-white shadow-md'
+                      : 'text-gray-600 hover:bg-gray-100'
                   )}
                 >
                   <Icon size={18} />
@@ -57,6 +64,7 @@ const Admin = () => {
           </nav>
 
           <button
+            type="button"
             onClick={handleLogout}
             className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-red-600 hover:bg-red-50 transition-all font-medium mt-8"
           >
@@ -66,14 +74,7 @@ const Admin = () => {
         </aside>
 
         <main className="flex-1 bg-white border border-gray-100 rounded-2xl p-6 shadow-sm min-h-[600px]">
-          <Routes>
-            <Route path="/" element={<div className="flex flex-col items-center justify-center h-full text-gray-400">
-              <LayoutDashboard size={48} className="mb-4 opacity-20" />
-              <p>Select a section to manage content</p>
-            </div>} />
-            <Route path="/posts/*" element={<PostManager />} />
-            <Route path="/projects/*" element={<ProjectManager />} />
-          </Routes>
+          <Outlet />
         </main>
       </div>
     </div>

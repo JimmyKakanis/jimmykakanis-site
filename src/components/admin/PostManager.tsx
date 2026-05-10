@@ -8,7 +8,8 @@ import { db } from '../../lib/firebase';
 import type { BlogPost } from '../../types/index';
 import Editor from '../Editor';
 import { Plus, Pencil, Trash2, ArrowLeft, Save, FileText } from 'lucide-react';
-import { uploadImage } from '../../lib/upload';
+import { uploadBlogCoverImages } from '../../lib/upload';
+import { CoverImageWithFallback } from '../CoverImageWithFallback';
 
 const PostList = () => {
   const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -57,8 +58,16 @@ const PostList = () => {
           posts.map((post) => (
             <div key={post.id} className="flex items-center justify-between p-4 border rounded-xl hover:shadow-sm transition-shadow">
               <div className="flex items-center gap-4">
-                {post.coverImage ? (
-                  <img src={post.coverImage} alt={post.title} className="w-12 h-12 object-cover rounded-lg" />
+                {post.coverImageThumbnail || post.coverImage ? (
+                  <CoverImageWithFallback
+                    thumbnailSrc={post.coverImageThumbnail}
+                    primarySrc={post.coverImage}
+                    alt={post.title}
+                    className="w-12 h-12 object-cover rounded-lg"
+                    width={48}
+                    height={48}
+                    loading="lazy"
+                  />
                 ) : (
                   <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
                     <FileText size={20} />
@@ -112,6 +121,7 @@ const PostEditor = () => {
   const [content, setContent] = useState('');
   const [excerpt, setExcerpt] = useState('');
   const [coverImage, setCoverImage] = useState<string | null>(null);
+  const [coverImageThumbnail, setCoverImageThumbnail] = useState<string | null>(null);
   const [status, setStatus] = useState<'draft' | 'published'>('draft');
   const [uploading, setUploading] = useState(false);
 
@@ -127,6 +137,7 @@ const PostEditor = () => {
           setContent(data.content);
           setExcerpt(data.excerpt);
           setCoverImage(data.coverImage || null);
+          setCoverImageThumbnail(data.coverImageThumbnail ?? null);
           setStatus(data.status || 'draft');
         }
         setLoading(false);
@@ -140,8 +151,9 @@ const PostEditor = () => {
     if (file) {
       setUploading(true);
       try {
-        const url = await uploadImage(file, 'blog-covers');
-        setCoverImage(url);
+        const { fullUrl, thumbnailUrl } = await uploadBlogCoverImages(file, 'blog-covers');
+        setCoverImage(fullUrl);
+        setCoverImageThumbnail(thumbnailUrl);
       } catch (err) {
         console.error('Error uploading image:', err);
         alert('Failed to upload image. Please check your Firebase Storage settings.');
@@ -160,6 +172,7 @@ const PostEditor = () => {
       content,
       excerpt,
       coverImage,
+      coverImageThumbnail,
       status: newStatus,
       updatedAt: Timestamp.now(),
     };
@@ -256,7 +269,10 @@ const PostEditor = () => {
                 <img src={coverImage} alt="Cover preview" className="w-full h-full object-cover rounded-lg shadow-sm" />
                 <button 
                   type="button"
-                  onClick={() => setCoverImage(null)}
+                  onClick={() => {
+                    setCoverImage(null);
+                    setCoverImageThumbnail(null);
+                  }}
                   className="absolute -top-2 -right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                 >
                   <Trash2 size={14} />
@@ -293,9 +309,9 @@ const PostEditor = () => {
 const PostManager = () => {
   return (
     <Routes>
-      <Route path="/" element={<PostList />} />
-      <Route path="/new" element={<PostEditor />} />
-      <Route path="/edit/:id" element={<PostEditor />} />
+      <Route index element={<PostList />} />
+      <Route path="new" element={<PostEditor />} />
+      <Route path="edit/:id" element={<PostEditor />} />
     </Routes>
   );
 };

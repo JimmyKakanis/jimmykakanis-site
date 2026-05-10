@@ -12,6 +12,14 @@ dist
 dist-ssr
 *.local
 
+# Local env (secrets) — use .env.example as template
+.env
+
+# Firebase Admin / migrations (never commit keys)
+**/service-account*.json
+**/*firebase-adminsdk*.json
+.secrets/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

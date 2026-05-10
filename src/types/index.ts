@@ -5,6 +5,8 @@ export interface BlogPost {
   content: string;
   excerpt: string;
   coverImage?: string | null;
+  /** Smaller JPEG for blog grid / admin lists; omit for legacy posts — UI falls back to coverImage */
+  coverImageThumbnail?: string | null;
   status: 'draft' | 'published';
   publishedAt: any;
   updatedAt: any;
@@ -16,7 +18,8 @@ export interface Project {
   title: string;
   description: string;
   image: string;
-  link: string;
+  /** If set (valid URL), project cards open this in a new tab; otherwise `/projects/:id` */
+  link?: string | null;
   order: number;
   status: 'draft' | 'published';
 }

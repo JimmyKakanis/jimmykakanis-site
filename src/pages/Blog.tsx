@@ -3,6 +3,7 @@ import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import type { BlogPost } from '../types/index';
 import { Link } from 'react-router-dom';
+import { CoverImageWithFallback } from '../components/CoverImageWithFallback';
 
 const Blog = () => {
   const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -17,11 +18,11 @@ const Blog = () => {
         );
         const querySnapshot = await getDocs(q);
         const postsData = querySnapshot.docs
-          .map(doc => ({
-            id: doc.id,
-            ...doc.data()
-          }))
-          .filter((post: any) => post.status === 'published') as BlogPost[];
+          .map((docSnap) => ({
+            id: docSnap.id,
+            ...docSnap.data(),
+          } as BlogPost))
+          .filter((post) => post.status === 'published');
         setPosts(postsData);
       } catch (err) {
         console.error("Error fetching posts:", err);
@@ -42,19 +43,25 @@ const Blog = () => {
     <div className="max-w-2xl mx-auto px-6 py-12">
       <h1 className="text-4xl font-serif mb-12 text-center">Blog</h1>
       <div className="space-y-16">
-        {posts.map((post) => (
+        {posts.map((post, index) => {
+          const hasCover =
+            (typeof post.coverImage === 'string' && post.coverImage.trim() !== '') ||
+            (typeof post.coverImageThumbnail === 'string' && post.coverImageThumbnail.trim() !== '');
+
+          return (
           <article key={post.id} className="flex flex-col md:flex-row gap-8 items-start group">
-            {post.coverImage && typeof post.coverImage === 'string' && post.coverImage.trim() !== '' && (
-              <div className="w-full md:w-48 aspect-square overflow-hidden rounded-xl bg-gray-50 flex-shrink-0">
+            {hasCover && (
+              <div className="w-full md:w-48 aspect-square overflow-hidden rounded-xl bg-gray-50 flex-shrink-0 relative">
                 <Link to={`/blog/${post.id}`}>
-                  <img 
-                    src={post.coverImage} 
-                    alt={post.title} 
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" 
-                    onError={(e) => {
-                      // Fallback if image fails to load
-                      (e.target as HTMLImageElement).style.display = 'none';
-                    }}
+                  <CoverImageWithFallback
+                    thumbnailSrc={post.coverImageThumbnail}
+                    primarySrc={post.coverImage}
+                    alt={post.title}
+                    width={448}
+                    height={448}
+                    loading={index === 0 ? 'eager' : 'lazy'}
+                    fetchPriority={index === 0 ? 'high' : undefined}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                 </Link>
               </div>
@@ -71,7 +78,8 @@ const Blog = () => {
               </p>
             </div>
           </article>
-        ))}
+        );
+        })}
         {posts.length === 0 && (
           <p className="text-center text-gray-500 italic">No posts yet. Check back soon!</p>
         )}

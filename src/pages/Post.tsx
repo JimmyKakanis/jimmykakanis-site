@@ -49,7 +49,7 @@ const Post = () => {
       </Link>
       
       {post.coverImage && (
-        <img src={post.coverImage} alt={post.title} className="w-full aspect-[2/1] object-cover rounded-2xl mb-8" />
+        <img src={post.coverImage} alt={post.title} className="w-full aspect-[2/1] object-cover rounded-2xl mb-8" decoding="async" fetchPriority="high" />
       )}
 
       <h1 className="text-4xl md:text-5xl font-serif mb-4 leading-tight">{post.title}</h1>
@@ -60,9 +60,9 @@ const Post = () => {
       </p>
 
       <div 
-        className="prose prose-lg prose-gray max-w-none 
+        className="blog-prose-content prose prose-lg prose-gray max-w-none 
           prose-headings:font-serif prose-headings:font-bold prose-headings:text-black
-          prose-a:text-brand-red prose-a:no-underline hover:prose-a:underline
+          prose-a:text-blog-link prose-a:underline hover:prose-a:text-blog-link-hover
           prose-img:rounded-2xl prose-blockquote:border-brand-red prose-blockquote:font-serif"
         dangerouslySetInnerHTML={{ __html: post.content }}
       />

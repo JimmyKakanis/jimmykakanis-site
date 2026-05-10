@@ -4,12 +4,15 @@ import About from './pages/About';
 import Blog from './pages/Blog';
 import Post from './pages/Post';
 import Projects from './pages/Projects';
+import ProjectDetail from './pages/ProjectDetail';
 import Contact from './pages/Contact';
 import Login from './pages/Login';
-import Admin from './pages/Admin';
+import Admin, { AdminHome } from './pages/Admin';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
+import PostManager from './components/admin/PostManager';
+import ProjectManager from './components/admin/ProjectManager';
 
 function App() {
   return (
@@ -23,16 +26,21 @@ function App() {
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:id" element={<Post />} />
             <Route path="/projects" element={<Projects />} />
+            <Route path="/projects/:id" element={<ProjectDetail />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<Login />} />
             <Route
-              path="/admin/*"
+              path="/admin"
               element={
                 <ProtectedRoute>
                   <Admin />
                 </ProtectedRoute>
               }
-            />
+            >
+              <Route index element={<AdminHome />} />
+              <Route path="posts/*" element={<PostManager />} />
+              <Route path="projects/*" element={<ProjectManager />} />
+            </Route>
           </Routes>
         </main>
         <Footer />
